@@ -8,13 +8,15 @@ import (
 type SharedMemFooBar struct {
 	mu        sync.Mutex
 	cond      *sync.Cond
+	n         int
 	wg        *sync.WaitGroup
 	isFooTurn bool
 }
 
-func NewSignaling(wg *sync.WaitGroup) *SharedMemFooBar {
+func NewSharedMemoryFooBar(wg *sync.WaitGroup, n int) *SharedMemFooBar {
 	sig := &SharedMemFooBar{
 		isFooTurn: true,
+		n:         n,
 		wg:        wg,
 	}
 
@@ -22,10 +24,10 @@ func NewSignaling(wg *sync.WaitGroup) *SharedMemFooBar {
 	return sig
 }
 
-func (this *SharedMemFooBar) Foo(n int) {
+func (this *SharedMemFooBar) Foo() {
 	defer this.wg.Done()
 
-	for i := 0; i < n; i++ {
+	for i := 0; i < this.n; i++ {
 		this.mu.Lock()
 
 		for !this.isFooTurn {
@@ -39,10 +41,10 @@ func (this *SharedMemFooBar) Foo(n int) {
 	}
 }
 
-func (this *SharedMemFooBar) Bar(n int) {
+func (this *SharedMemFooBar) Bar() {
 	defer this.wg.Done()
 
-	for i := 0; i < n; i++ {
+	for i := 0; i < this.n; i++ {
 		this.mu.Lock()
 
 		for this.isFooTurn {

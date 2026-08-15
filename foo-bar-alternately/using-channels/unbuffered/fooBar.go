@@ -8,13 +8,15 @@ import (
 type UnbufferedFooBar struct {
 	fooChan chan int
 	barChan chan int
+	n       int
 	wg      *sync.WaitGroup
 }
 
-func NewChannel(wg *sync.WaitGroup) *UnbufferedFooBar {
+func NewUnbufferedFooBar(wg *sync.WaitGroup, n int) *UnbufferedFooBar {
 	return &UnbufferedFooBar{
 		fooChan: make(chan int),
 		barChan: make(chan int),
+		n:       n,
 		wg:      wg,
 	}
 }
@@ -23,22 +25,22 @@ func (this *UnbufferedFooBar) KickStart() {
 	this.fooChan <- 1
 }
 
-func (this *UnbufferedFooBar) Foo(n int) {
+func (this *UnbufferedFooBar) Foo() {
 	defer this.wg.Done()
-	for i := 0; i < n; i++ {
+	for i := 0; i < this.n; i++ {
 		<-this.fooChan
 		fmt.Print("foo")
 		this.barChan <- 1
 	}
 }
 
-func (this *UnbufferedFooBar) Bar(n int) {
+func (this *UnbufferedFooBar) Bar() {
 	defer this.wg.Done()
-	for i := 0; i < n; i++ {
+	for i := 0; i < this.n; i++ {
 		<-this.barChan
 		fmt.Print("bar")
 
-		if i < n-1 {
+		if i < this.n-1 {
 			this.fooChan <- 1
 		}
 	}
