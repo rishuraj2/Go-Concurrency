@@ -1,19 +1,19 @@
-package sharedstate
+package sharedmemory
 
 import (
 	"fmt"
 	"sync"
 )
 
-type Signaling struct {
+type SharedMemFooBar struct {
 	mu        sync.Mutex
 	cond      *sync.Cond
 	wg        *sync.WaitGroup
 	isFooTurn bool
 }
 
-func NewSignaling(wg *sync.WaitGroup) *Signaling {
-	sig := &Signaling{
+func NewSignaling(wg *sync.WaitGroup) *SharedMemFooBar {
+	sig := &SharedMemFooBar{
 		isFooTurn: true,
 		wg:        wg,
 	}
@@ -22,7 +22,7 @@ func NewSignaling(wg *sync.WaitGroup) *Signaling {
 	return sig
 }
 
-func (this *Signaling) Foo(n int) {
+func (this *SharedMemFooBar) Foo(n int) {
 	defer this.wg.Done()
 
 	for i := 0; i < n; i++ {
@@ -39,7 +39,7 @@ func (this *Signaling) Foo(n int) {
 	}
 }
 
-func (this *Signaling) Bar(n int) {
+func (this *SharedMemFooBar) Bar(n int) {
 	defer this.wg.Done()
 
 	for i := 0; i < n; i++ {
