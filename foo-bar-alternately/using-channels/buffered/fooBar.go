@@ -13,16 +13,16 @@ type BufferedFooBar struct {
 }
 
 func NewBufferedFooBar(wg *sync.WaitGroup, n int) *BufferedFooBar {
-	return &BufferedFooBar{
+	fb := &BufferedFooBar{
 		fooChan: make(chan int, 1),
 		barChan: make(chan int, 1),
 		n:       n,
 		wg:      wg,
 	}
-}
 
-func (this *BufferedFooBar) KickStart() {
-	this.fooChan <- 1
+	fb.fooChan <- 1 // ensuring that foo goes first
+
+	return fb
 }
 
 func (this *BufferedFooBar) Foo() {

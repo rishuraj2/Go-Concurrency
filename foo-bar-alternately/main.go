@@ -26,7 +26,6 @@ func main() {
 	wg.Add(2)
 	go bufChan.Foo()
 	go bufChan.Bar()
-	bufChan.KickStart()
 	wg.Wait()
 	fmt.Print("\n\n")
 
