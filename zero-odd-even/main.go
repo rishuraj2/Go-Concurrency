@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"sync"
+	sharedstate "zerooddeven/shared-state"
 	"zerooddeven/using-channels/unbuffered"
 )
 
@@ -16,6 +17,15 @@ func main() {
 	go unbufChan.Even()
 	go unbufChan.Odd()
 	go unbufChan.Zero()
+	wg.Wait()
+	fmt.Print("\n\n")
+
+	fmt.Println("---------- Shared State ----------")
+	shareState := sharedstate.NewZeroOddEven(n, &wg)
+	wg.Add(3)
+	go shareState.Odd()
+	go shareState.Even()
+	go shareState.Zero()
 	wg.Wait()
 	fmt.Print("\n\n")
 }
